@@ -77,18 +77,6 @@ void testRead(string filename)
         cerr<<"No se pudo abrir el archivos\n";
 }
 
-struct FixedRecord{
-    string archivo;
-    int size;
-    FixedRecord(string arch="../datos1.txt"){
-        archivo=arch;
-    }
-    vector<Alumno>load(){
-        vector<Alumno>a;
-    }
-
-};
-
 void print(vector<Alumno>& v){
     for(auto i:v){
         cout<<"Codigo: "<<i.Codigo<<endl;
@@ -97,31 +85,98 @@ void print(vector<Alumno>& v){
         cout<<"Carrera: "<<i.Carrera<<endl;
     }
 }
+struct FixedRecord{
+    string archivo;
+    int size;
+    FixedRecord(string arch="../datos1.txt"){
+        archivo=arch;
+    }
+    vector<Alumno>load(){
+        vector<Alumno>a;
+        ifstream file(archivo,ios::in|ios::binary|ios::ate);
+        const int size=51;
+        int fileSize=file.tellg();
+        int registers=fileSize/size;//cant registros
+        file.seekg(0,ios::beg);//devolvemos el puntero al inicio
+        int s;
+        for(int i=0; i < registers;i++){
+            Alumno person;
+            file.seekg(i*size+2*i);
+//            cout<<"soy el i: "<<i<<" soy el puntero: "<<file.tellg()<<endl;
+            file.get(person.Codigo,5,'\0');
+            s=file.tellg();
+            file.seekg(s+1);
+//            cout<<"soy el puntero: "<<file.tellg()<<endl;
+            file.get(person.Nombre,11,'\0');
+            s=file.tellg();
+            file.seekg(s+1);
+            //cout<<"soy el puntero: "<<file.tellg()<<endl;
+            file.get(person.Apellidos,20,'\0');
+            s=file.tellg();
+            file.seekg(s+1);
+//            cout<<"soy el puntero: "<<file.tellg()<<endl;
+            file.get(person.Carrera,15,'\0');
+            file.get();
+            a.push_back(person);
+        }
+
+        file.close();
+        print(a);
+        return a;
+    }
+
+    void add(Alumno record){
+
+    }
+
+};
+
 int main()
 {
     //testWrite("test.txt");
     //testRead("test.txt");
-    string arc="../datos1.txt";
-    vector<Alumno>a;
-    ifstream file(arc,ios::in|ios::binary|ios::ate);
-    const int size=51;
-    int fileSize=file.tellg();
-    int registers=fileSize/size;
-    file.seekg(0,ios::beg);//devolvemos el puntero al inicio
-    for(int i=0; i < registers;i++){
-        Alumno person;
-        file.seekg(i*size+2*i);
-        cout<<"soy el i: "<<i<<" soy el puntero: "<<file.tellg()<<endl;
-        file.get(person.Codigo,5,'\0');
-        cout<<"soy el puntero: "<<file.tellg()<<endl;
-        file.get(person.Nombre,11,'\0');
-        cout<<"soy el puntero: "<<file.tellg()<<endl;
-        file.get(person.Apellidos,20,'\0');
-        cout<<"soy el puntero: "<<file.tellg()<<endl;
-        file.get(person.Carrera,15,'\0');
-        file.get();
-        a.push_back(person);
+    string archivo="../datos1.txt";
+    ofstream file(archivo,ios::app|ios::binary);
+    Alumno a;
+    string code,nombre,ape,carr;
+
+    cout<<"Ingresar codigo: ";cin>>code;
+    if (code.length() < 4) {
+        for (int i = code.length(); i < 4; i++) {
+            code += " ";
+        }
     }
-    print(a);
+    for (int i = 0; i < 4; i++) {
+        a.Codigo[i] = code[i];
+    }
+
+    cout<<"Ingresar nombre: ";cin>>nombre;
+    if (nombre.length() < 10) {
+        for (int i = nombre.length(); i < 4; i++) {
+            nombre += " ";
+        }
+    }
+    for (int i = 0; i < 10; i++) {
+        a.Nombre[i] = nombre[i];
+    }
+    cout<<"Ingresar apellidos: ";cin>>ape;
+    if (ape.length() < 19) {
+        for (int i = ape.length(); i < 19; i++) {
+            ape += " ";
+        }
+    }
+    for (int i = 0; i < 19; i++) {
+        a.Apellidos[i] = ape[i];
+    }
+    cout<<"Ingresar carrera: ";cin>>carr;
+    if (carr.length() < 14) {
+        for (int i = carr.length(); i < 14; i++) {
+            carr += " ";
+        }
+    }
+    for (int i = 0; i < 14; i++) {
+        a.Carrera[i] = carr[i];
+    }
+    cout<<a;
     return 0;
 }
