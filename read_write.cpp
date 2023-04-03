@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <climits>
 #include <vector>
+#include <climits>
 
 using namespace std;
 
@@ -15,7 +15,7 @@ struct Alumno//Record
 };
 
 ostream & operator << (ostream & stream, Alumno & p){
-    stream << p.Carrera;
+    stream << p.Codigo;
     stream << p.Nombre;
     stream << p.Apellidos;
     stream << p.Carrera;
@@ -80,40 +80,48 @@ void testRead(string filename)
 struct FixedRecord{
     string archivo;
     int size;
-    FixedRecord(string arch){
+    FixedRecord(string arch="../datos1.txt"){
         archivo=arch;
     }
-    vector<Alumno> load(){
+    vector<Alumno>load(){
         vector<Alumno>a;
-        Alumno person;
-
-        ifstream file;
-        file.open(archivo);
-        if(file.is_open()){
-            while(!file.eof()){
-                file>>person;
-                a.push_back(person);
-            }
-            file.close();
-        }else
-            cout<<"No se logro abrir el archivo"<<endl;
-        return a;
     }
+
 };
 
-void print(vector<Alumno>&a){
-    for(auto i:a){
-        cout<<i;
+void print(vector<Alumno>& v){
+    for(auto i:v){
+        cout<<"Codigo: "<<i.Codigo<<endl;
+        cout<<"Nombre: "<<i.Nombre<<endl;
+        cout<<"Apellidos: "<<i.Apellidos<<endl;
+        cout<<"Carrera: "<<i.Carrera<<endl;
     }
-
 }
-
 int main()
 {
     //testWrite("test.txt");
     //testRead("test.txt");
-    FixedRecord f("../datos1.txt");
-    auto a=f.load();
+    string arc="../datos1.txt";
+    vector<Alumno>a;
+    ifstream file(arc,ios::in|ios::binary|ios::ate);
+    const int size=51;
+    int fileSize=file.tellg();
+    int registers=fileSize/size;
+    file.seekg(0,ios::beg);//devolvemos el puntero al inicio
+    for(int i=0; i < registers;i++){
+        Alumno person;
+        file.seekg(i*size+2*i);
+        cout<<"soy el i: "<<i<<" soy el puntero: "<<file.tellg()<<endl;
+        file.get(person.Codigo,5,'\0');
+        cout<<"soy el puntero: "<<file.tellg()<<endl;
+        file.get(person.Nombre,11,'\0');
+        cout<<"soy el puntero: "<<file.tellg()<<endl;
+        file.get(person.Apellidos,20,'\0');
+        cout<<"soy el puntero: "<<file.tellg()<<endl;
+        file.get(person.Carrera,15,'\0');
+        file.get();
+        a.push_back(person);
+    }
     print(a);
     return 0;
 }
