@@ -25,11 +25,11 @@ ostream & operator << (ostream & stream, Alumno & p){
 }
 
 istream & operator >> (istream & stream, Alumno & p){
-    stream.get(p.Codigo, 5);
+    stream.get(p.Codigo, 5);//usar ignore
     stream.get(p.Nombre, 11);
     stream.get(p.Apellidos, 20);
     stream.get(p.Carrera, 15);
-    stream.get();
+    stream.get();//omite caracteres stream.ignore(INT_MAX,'\n');
     return stream;
 }
 
@@ -49,8 +49,10 @@ void testWrite(string filename){
     if(outFile.is_open()){
         //leer desde consola datos para person1
         Alumno person1;
-        cout<<"Nombre:"; readFromConsole(person1.Nombre, 12);
-        cout<<"Apellidos:"; readFromConsole(person1.Apellidos, 12);
+        cout<<"Codigo: "; readFromConsole(person1.Codigo, 5);
+        cout<<"Nombre: "; readFromConsole(person1.Nombre, 11);
+        cout<<"Apellidos: "; readFromConsole(person1.Apellidos, 20);
+        cout<<"Carrera: "; readFromConsole(person1.Carrera, 15);
         outFile << person1;
         outFile.close();
 
@@ -133,23 +135,22 @@ struct FixedRecord{
 
 int main()
 {
-    //testWrite("test.txt");
-    //testRead("test.txt");
     string archivo="../datos1.txt";
+//    testWrite(archivo);
+//    testRead(archivo);
     ofstream file(archivo,ios::app|ios::binary);
     Alumno a;
     string code,nombre,ape,carr;
 
     cout<<"Ingresar codigo: ";cin>>code;
-    if (code.length() < 4) {
+    if (code.length()< 4) {
         for (int i = code.length(); i < 4; i++) {
             code += " ";
         }
     }
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 10; i++) {
         a.Codigo[i] = code[i];
     }
-
     cout<<"Ingresar nombre: ";cin>>nombre;
     if (nombre.length() < 10) {
         for (int i = nombre.length(); i < 4; i++) {
@@ -177,6 +178,6 @@ int main()
     for (int i = 0; i < 14; i++) {
         a.Carrera[i] = carr[i];
     }
-    cout<<a;
+    cout<<a.Codigo<<" "<<a.Nombre<<" "<<a.Apellidos<<" "<<a.Carrera<<endl;
     return 0;
 }
