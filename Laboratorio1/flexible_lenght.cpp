@@ -55,9 +55,9 @@ struct VariableRecord{
         ifstream file(archivo.c_str(),ios::in|ios::binary|ios::ate);
         file.seekg(0,ios::beg);
         int cont = 0;
-        string temp = "a";
-        while(cont <= pos){
+        while(!file.eof() || cont <= pos){
             if(cont < pos){
+                string temp = "";
                 getline(file,temp,'\n');
                 cont++;
                 if(temp == ""){
@@ -83,7 +83,7 @@ int main(){
     VariableRecord* temp =  new VariableRecord;
     vector<Alumno> prueba = temp->load();
     Alumno* alumno_prueba = new Alumno;
-    *alumno_prueba = temp->readRecord(2);
+    *alumno_prueba = temp->readRecord(8);
     /*string nombre, apellidos, carrera, mensualidad;
     cout<<"Ingrese el nombre: "<<endl;
     cin>>nombre;
@@ -97,5 +97,5 @@ int main(){
     alumno_prueba->apellidos = apellidos;
     alumno_prueba->carrera = carrera;
     alumno_prueba->mensualidad = stof(mensualidad);*/
-    temp->add(*alumno_prueba);
+    //temp->add(*alumno_prueba);
 };
