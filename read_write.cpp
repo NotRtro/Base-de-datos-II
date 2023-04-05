@@ -12,24 +12,42 @@ struct Alumno//Record
     char Nombre [11];
     char Apellidos [20];
     char Carrera [15];
+    Alumno(){}
+    Alumno(string code, string nomb, string ape, string carr){
+        for (int i = 0; i < 4; ++i) {
+            Codigo[i]=code[i];
+        }Codigo[4]='\0';
+        for (int i = 0; i < 10; ++i) {
+            Nombre[i]=nomb[i];
+        }Nombre[10]='\0';
+        for (int i = 0; i < 19; ++i) {
+            Apellidos[i]=ape[i];
+        }Apellidos[19]='\0';
+        for (int i = 0; i < 14; ++i) {
+            Carrera[i]=carr[i];
+        }Carrera[14]='\0';
+    }
 };
 
 ostream & operator << (ostream & stream, Alumno & p){
-    stream << p.Codigo;
-    stream << p.Nombre;
-    stream << p.Apellidos;
-    stream << p.Carrera;
     stream << "\n";
+    stream << p.Codigo<<" ";
+    stream << p.Nombre<<" ";
+    stream << p.Apellidos<<" ";
+    stream << p.Carrera<<" ";
     stream << flush;
     return stream;
 }
 
 istream & operator >> (istream & stream, Alumno & p){
     stream.get(p.Codigo, 5);//usar ignore
+    stream.ignore();
     stream.get(p.Nombre, 11);
+    stream.ignore();
     stream.get(p.Apellidos, 20);
+    stream.ignore();
     stream.get(p.Carrera, 15);
-    stream.get();//omite caracteres stream.ignore(INT_MAX,'\n');
+    stream.ignore(INT_MAX,'\n');
     return stream;
 }
 
@@ -87,48 +105,58 @@ void print(vector<Alumno>& v){
         cout<<"Carrera: "<<i.Carrera<<endl;
     }
 }
-struct FixedRecord{
+struct FixedRecord {
     string archivo;
     int size;
-    FixedRecord(string arch="../datos1.txt"){
-        archivo=arch;
+
+    FixedRecord(string arch = "../datos1.txt") {
+        archivo = arch;
     }
-    vector<Alumno>load(){
-        vector<Alumno>a;
-        ifstream file(archivo,ios::in|ios::binary|ios::ate);
-        const int size=51;
-        int fileSize=file.tellg();
-        int registers=fileSize/size;//cant registros
-        file.seekg(0,ios::beg);//devolvemos el puntero al inicio
-        int s;
-        for(int i=0; i < registers;i++){
+
+    vector<Alumno> load() {
+        vector<Alumno> a;
+        ifstream file(archivo, ios::in | ios::binary | ios::ate);
+        const int size = 51;
+        int fileSize = file.tellg();
+        int registers = fileSize / size;//cant registros
+        file.seekg(0, ios::beg);//devolvemos el puntero al inicio
+        for (int i = 0; i < registers; i++) {
             Alumno person;
-            file.seekg(i*size+2*i);
-//            cout<<"soy el i: "<<i<<" soy el puntero: "<<file.tellg()<<endl;
-            file.get(person.Codigo,5,'\0');
-            s=file.tellg();
-            file.seekg(s+1);
-//            cout<<"soy el puntero: "<<file.tellg()<<endl;
-            file.get(person.Nombre,11,'\0');
-            s=file.tellg();
-            file.seekg(s+1);
-            //cout<<"soy el puntero: "<<file.tellg()<<endl;
-            file.get(person.Apellidos,20,'\0');
-            s=file.tellg();
-            file.seekg(s+1);
-//            cout<<"soy el puntero: "<<file.tellg()<<endl;
-            file.get(person.Carrera,15,'\0');
-            file.get();
+            file>>person;
             a.push_back(person);
         }
-
         file.close();
         print(a);
         return a;
     }
 
-    void add(Alumno record){
-
+    void add(Alumno record) {
+        ofstream file(archivo,ios::app|ios::binary);
+        int sCodigo = strlen(record.Codigo); //5
+        int sNombre = strlen(record.Nombre); //11
+        int sApellido = strlen(record.Apellidos);//20
+        int sCarrera = strlen(record.Carrera);//15
+        if (sCodigo < 4) {
+            for (int i = sCodigo; i < 4; i++) {
+                record.Codigo[i] = ' ';
+            }
+        }
+        if (sNombre < 10) {
+            for (int i = sNombre; i < 10; i++) {
+                record.Nombre[i] = ' ';
+            }
+        }
+        if (sApellido < 19) {
+            for (int i = sApellido; i < 19; i++) {
+                record.Apellidos[i] = ' ';
+            }
+        }
+        if (sCarrera < 14) {
+            for (int i = sCarrera; i < 14; i++) {
+                record.Carrera[i] = ' ';
+            }
+        }
+        file<<record;
     }
 
 };
@@ -136,48 +164,15 @@ struct FixedRecord{
 int main()
 {
     string archivo="../datos1.txt";
+    FixedRecord f;
+
+    //auto a= f.load();
 //    testWrite(archivo);
 //    testRead(archivo);
-    ofstream file(archivo,ios::app|ios::binary);
-    Alumno a;
-    string code,nombre,ape,carr;
+//    ofstream file(archivo,ios::app|ios::binary);
 
-    cout<<"Ingresar codigo: ";cin>>code;
-    if (code.length()< 4) {
-        for (int i = code.length(); i < 4; i++) {
-            code += " ";
-        }
-    }
-    for (int i = 0; i < 10; i++) {
-        a.Codigo[i] = code[i];
-    }
-    cout<<"Ingresar nombre: ";cin>>nombre;
-    if (nombre.length() < 10) {
-        for (int i = nombre.length(); i < 4; i++) {
-            nombre += " ";
-        }
-    }
-    for (int i = 0; i < 10; i++) {
-        a.Nombre[i] = nombre[i];
-    }
-    cout<<"Ingresar apellidos: ";cin>>ape;
-    if (ape.length() < 19) {
-        for (int i = ape.length(); i < 19; i++) {
-            ape += " ";
-        }
-    }
-    for (int i = 0; i < 19; i++) {
-        a.Apellidos[i] = ape[i];
-    }
-    cout<<"Ingresar carrera: ";cin>>carr;
-    if (carr.length() < 14) {
-        for (int i = carr.length(); i < 14; i++) {
-            carr += " ";
-        }
-    }
-    for (int i = 0; i < 14; i++) {
-        a.Carrera[i] = carr[i];
-    }
-    cout<<a.Codigo<<" "<<a.Nombre<<" "<<a.Apellidos<<" "<<a.Carrera<<endl;
+Alumno b("0111","ronaldo","floresSoto","utec");
+cout<<strlen(b.Codigo)<<" "<<strlen(b.Nombre)<<" "<<strlen(b.Apellidos)<<" "<<strlen(b.Carrera)<<endl;
+f.add(b);
     return 0;
 }
