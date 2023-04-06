@@ -30,12 +30,12 @@ struct Alumno//Record
 };
 
 ostream & operator << (ostream & stream, Alumno & p){
-    stream << "\n";
     stream << p.Codigo<<" ";
     stream << p.Nombre<<" ";
     stream << p.Apellidos<<" ";
     stream << p.Carrera<<" ";
-    stream << flush;
+    stream << "\n";
+  //  stream << flush;
     return stream;
 }
 
@@ -170,7 +170,7 @@ struct FixedRecord {
                 }
             }
             --pos;//3
-            file.seekg(pos*size_array+2*pos);
+            file.seekg(pos*size_array+ pos);
             file>>a;
             return a;
             }else
@@ -185,7 +185,8 @@ int main()
     FixedRecord f;
    // auto a= f.load();
 
-
+    Alumno c("0000","ronaldo","floressoto","utec");
+    f.add(c);
     auto b=f.readRecord(0);
     cout<<b;
     return 0;
