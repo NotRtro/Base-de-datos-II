@@ -30,12 +30,12 @@ struct Alumno//Record
 };
 
 ostream & operator << (ostream & stream, Alumno & p){
-    stream << "\n";
     stream << p.Codigo<<" ";
     stream << p.Nombre<<" ";
     stream << p.Apellidos<<" ";
     stream << p.Carrera<<" ";
-    stream << flush;
+    stream << "\n";
+  //  stream << flush;
     return stream;
 }
 
@@ -107,8 +107,7 @@ void print(vector<Alumno>& v){
 }
 struct FixedRecord {
     string archivo;
-    int size;
-
+    const int size_array=51;
     FixedRecord(string arch = "../datos1.txt") {
         archivo = arch;
     }
@@ -116,9 +115,8 @@ struct FixedRecord {
     vector<Alumno> load() {
         vector<Alumno> a;
         ifstream file(archivo, ios::in | ios::binary | ios::ate);
-        const int size = 51;
         int fileSize = file.tellg();
-        int registers = fileSize / size;//cant registros
+        int registers = fileSize / size_array;//cant registros
         file.seekg(0, ios::beg);//devolvemos el puntero al inicio
         for (int i = 0; i < registers; i++) {
             Alumno person;
@@ -142,7 +140,7 @@ struct FixedRecord {
             }
         }
         if (sNombre < 10) {
-            for (int i = sNombre; i < 10; i++) {
+            for (int i = sNombre ; i < 10; i++) {
                 record.Nombre[i] = ' ';
             }
         }
@@ -159,20 +157,38 @@ struct FixedRecord {
         file<<record;
     }
 
+    Alumno readRecord(int pos){
+        ifstream file(archivo,ios::ate);
+        if(file.is_open()){
+            int fileSize = file.tellg();
+            Alumno a;
+            int sz = fileSize/size_array;
+            if(pos<1||pos>sz){
+                while(pos<1||pos>sz){
+                    cout<<"Ingrese un valor valido entre 1 y "<<sz<<": ";
+                    cin>>pos;
+                }
+            }
+            --pos;//3
+            file.seekg(pos*size_array+ pos);
+            file>>a;
+            return a;
+            }else
+                cout<<"No se pudo abrir"<<endl;
+        }
+
 };
 
 int main()
 {
     string archivo="../datos1.txt";
     FixedRecord f;
+   // auto a= f.load();
 
-    //auto a= f.load();
-//    testWrite(archivo);
-//    testRead(archivo);
-//    ofstream file(archivo,ios::app|ios::binary);
-
-Alumno b("0111","ronaldo","floresSoto","utec");
-cout<<strlen(b.Codigo)<<" "<<strlen(b.Nombre)<<" "<<strlen(b.Apellidos)<<" "<<strlen(b.Carrera)<<endl;
-f.add(b);
+    Alumno c("0000","ronaldo","floressoto","utec");
+    f.add(c);
+    auto b=f.readRecord(0);
+    cout<<b;
     return 0;
+
 }
